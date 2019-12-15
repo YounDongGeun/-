@@ -14,6 +14,7 @@
     <script>
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
+//--------------------------공 위치--------------------------------------
         var x = canvas.width/2;//캔퍼스 폭 중앙
         var y = canvas.height -130;//캔퍼스 바닥에서 130떨어진 곳
 //--------------------------------------------------------------------
@@ -24,46 +25,76 @@
 
         var paddleHeight = 75;
         var paddleWidht = 10;
-        var paddleX = (canvas.width - paddleWidht);
+        var paddleX = (0);
+        var paddleY = (cavas.width - 10);
 
-        var upPressed = false;
-        var downPressed = false;
-        document.addEventListener("keydown", keyDownHandler, false);
-        document.addEventListener("keyup", keyUpHandler, false);
+        var upPressedX = false;
+        var downPressedX = false;
+        var upPressedY = false;
+        var downPressedY = false;
+
+        document.addEventListener("p2Keydown", p2KeyDownHandler, false);
+        document.addEventListener("p2Keyup", p2keyUpHandler, false);
+        document.addEventListener("p1Keydown", p1KeyDownHandler, false);
+        document.addEventListener("p1Keyup", p1keyUpHandler, false);
 //----------------------------------------------------------------------
-        function keyDownHandler(e){
+        function p1KeyDownHandler(e){
         if(e.key == "up" || e.key == "ArrowUp"){
-          upPressed = true;
+          upPressedX = true;
           }
         else if(e.key == "down" || e.key == "ArrowDown"){
-          downPressed = true;
+          downPressedX = true;
           }
         }
-        function keyUpHandler(e){
+        function p1keyUpHandler(e){
           if(e.key == "up" || e.key == "ArrowUp"){
-              upPressed = false;
+              upPressedX = false;
             }
           else if(e.key == "down" || e.key == "ArrowDown"){
-              downPressed = false;
+              downPressedX = false;
             }
         }
-
-        function boxDraw(){
-          ctx.beginPath();
-          ctx.rect(160, 10, 100, 40);
-          ctx.strokeStyle = "rgba(0, 0, 255, 0.5)";
-          ctx.stroke();
-          ctx.closePath();
+//---------------------------------------------------------------------
+        function p2KeyDownHandler(e){
+        if(e.key == "up" || e.key == "ArrowUp"){
+          upPressedX = true;
+          }
+        else if(e.key == "down" || e.key == "ArrowDown"){
+          downPressedX = true;
+          }
         }
+        function p2keyUpHandler(e){
+          if(e.key == "up" || e.key == "ArrowUp"){
+              upPressedX = false;
+            }
+          else if(e.key == "down" || e.key == "ArrowDown"){
+              downPressedX = false;
+            }
+        }
+        // function boxDraw(){
+        //   ctx.beginPath();
+        //   ctx.rect(160, 10, 100, 40);
+        //   ctx.strokeStyle = "rgba(0, 0, 255, 0.5)";
+        //   ctx.stroke();
+        //   ctx.closePath();
+        // }
 
-        function drawPaddle(){
+        function p1DrawPaddle(){
           ctx.beginPath();
           ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidht, paddleHeight);
           ctx.fillStyle = "#FFFF00";
           ctx.fill();
           ctx.closePath();
         }
-
+//--------------------------------------------------------------------------
+        function p2DrawPaddle(){
+          ctx.beginPath();
+          ctx.rect(paddleY, canvas.height, paddleWidht, paddleHeight);
+          ctx.fillStyle = "#FF0000";
+          ctx.fill();
+          ctx.closePath();
+        }
+//-------------------------------------------------------------------------
         function ball(){
           ctx.beginPath();
           ctx.arc(x, y, ballRadius, 0, Math.PI*2);
@@ -75,7 +106,8 @@
         function ballDraw(){
           ctx.clearRect(0, 0, canvas.width, canvas.height);//지나는 물체가 남긴 찌꺼기들을 지워줌
           ball();
-          drawPaddle();
+          p1DrawPaddle();
+          p2DrawPaddle();
           // 공을 튕겨내는 벽 생성----------------------------------------
           if(x + dx > canvas.width-ballRadius || x + dx < ballRadius){
             dx = -dx;
@@ -85,24 +117,38 @@
             dy = -dy;
           }
           //-------------------------------------------------------------
-          if(upPressed){
+          if(upPressedX){
             paddleX += 7;
             if(paddleX + paddleWidht > canvas.width){
               paddleX = canvas.width - paddleWidht;
             }
           }
-          else if(downPressed){
+          else if(downPressedX){
             paddleX -= 7;
             if(paddleX < 0){
               paddleX = 0;
             }
           }
 
+//-------------------------------------------------------------------
+          if(upPressedY){
+            paddleY += 7;
+            if(paddleY + paddleWidht > canvas.width){
+              paddleY = canvas.width - paddleWidht;
+            }
+          }
+          else if(downPressedY){
+            paddleY -= 7;
+            if(paddleY < 0){
+              paddleY = 0;
+            }
+          }
+//-------------------------------------------------------------------
           x += dx;
           y += dy;
         }
 
-        setInterval(boxDraw, 20);
+        // setInterval(boxDraw, 20);
         setInterval(ballDraw, 20);
 
 
