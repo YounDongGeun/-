@@ -2,100 +2,43 @@
 <html lang="kr" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Gamedev Canvas</title>
+    <title></title>
+    <script src ="jquery-3.4.1.min.js" charset="utf-8"></script>
     <style>
-      *{padding: 0; margin: 0;}
-        canvas{background: #eee; display: block; margin: 0 auto;}
+    *{padding: 0; margin: 0;}
+      canvas{background: #eee; display: block; margin: 0 auto;}
     </style>
   </head>
   <body>
-    <canvas id="myCanvas" width="600" height="420"></canvas>
-
-    <script>
-        var canvas = document.getElementById("myCanvas");
+    <script type="text/javascript">
+    $(document).ready(function() {
+        var canvas = $("#canvas")[0];
         var ctx = canvas.getContext("2d");
-//--------------------------공 위치--------------------------------------
         var x = canvas.width/2;//캔퍼스 폭 중앙
         var y = canvas.height -130;//캔퍼스 바닥에서 130떨어진 곳
-//--------------------------------------------------------------------
+        //--------------------------------------------------------------------
         var dx = 2;
         var dy = -2;
-//--------------------------------------------------------------------
+        var barY = 4;
+        //--------------------------------------------------------------------
         var ballRadius = 10;
 
         var paddleHeight = 75;
         var paddleWidht = 10;
-        var paddleX = (0);
-        var paddleY = (cavas.width - 10);
+        var player2paddleX = (canvas.width - paddleWidht*4);
+        var player2paddleY = ((canvas.height - paddleHeight)/2);
 
-        var upPressedX = false;
-        var downPressedX = false;
-        var upPressedY = false;
-        var downPressedY = false;
+        // document.addEventListener("keydown", keyDownHandler, false);
+        // document.addEventListener("keyup", keyUpHandler, false);
 
-        document.addEventListener("p2Keydown", p2KeyDownHandler, false);
-        document.addEventListener("p2Keyup", p2keyUpHandler, false);
-        document.addEventListener("p1Keydown", p1KeyDownHandler, false);
-        document.addEventListener("p1Keyup", p1keyUpHandler, false);
-//----------------------------------------------------------------------
-        function p1KeyDownHandler(e){
-        if(e.key == "up" || e.key == "ArrowUp"){
-          upPressedX = true;
-          }
-        else if(e.key == "down" || e.key == "ArrowDown"){
-          downPressedX = true;
-          }
-        }
-        function p1keyUpHandler(e){
-          if(e.key == "up" || e.key == "ArrowUp"){
-              upPressedX = false;
-            }
-          else if(e.key == "down" || e.key == "ArrowDown"){
-              downPressedX = false;
-            }
-        }
-//---------------------------------------------------------------------
-        function p2KeyDownHandler(e){
-        if(e.key == "up" || e.key == "ArrowUp"){
-          upPressedX = true;
-          }
-        else if(e.key == "down" || e.key == "ArrowDown"){
-          downPressedX = true;
-          }
-        }
-        function p2keyUpHandler(e){
-          if(e.key == "up" || e.key == "ArrowUp"){
-              upPressedX = false;
-            }
-          else if(e.key == "down" || e.key == "ArrowDown"){
-              downPressedX = false;
-            }
-        }
-        // function boxDraw(){
-        //   ctx.beginPath();
-        //   ctx.rect(160, 10, 100, 40);
-        //   ctx.strokeStyle = "rgba(0, 0, 255, 0.5)";
-        //   ctx.stroke();
-        //   ctx.closePath();
-        // }
-
-        function p1DrawPaddle(){
+        function drawPaddle(){
           ctx.beginPath();
-          ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidht, paddleHeight);
+          ctx.rect(player2paddleX, player2paddleY, paddleWidht, paddleHeight);
           ctx.fillStyle = "#FFFF00";
           ctx.fill();
           ctx.closePath();
         }
-//--------------------------------------------------------------------------
-        function p2DrawPaddle(){
-          ctx.beginPath();
-          ctx.rect(paddleY, canvas.height, paddleWidht, paddleHeight);
-          ctx.fillStyle = "#FF0000";
-          ctx.fill();
-          ctx.closePath();
-        }
-//-------------------------------------------------------------------------
-        function ball(){
+        function drawBall(){
           ctx.beginPath();
           ctx.arc(x, y, ballRadius, 0, Math.PI*2);
           ctx.fillStyle = "#0095DD";
@@ -103,12 +46,10 @@
           ctx.closePath();
         }
 
-        function ballDraw(){
-          ctx.clearRect(0, 0, canvas.width, canvas.height);//지나는 물체가 남긴 찌꺼기들을 지워줌
-          ball();
-          p1DrawPaddle();
-          p2DrawPaddle();
-          // 공을 튕겨내는 벽 생성----------------------------------------
+        function moveAll(){
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          drawBall();
+          drawPaddle();
           if(x + dx > canvas.width-ballRadius || x + dx < ballRadius){
             dx = -dx;
           }
@@ -116,44 +57,33 @@
           if(y + dy > canvas.height-ballRadius || y + dy < ballRadius ){ // 위 아래벽 튕겨내기
             dy = -dy;
           }
-          //-------------------------------------------------------------
-          if(upPressedX){
-            paddleX += 7;
-            if(paddleX + paddleWidht > canvas.width){
-              paddleX = canvas.width - paddleWidht;
+//------------------------------------------------------------------------------------
+          $(document).keydown(function(event) {
+            if (event.keyCode == '38') {
+              player2paddleY += barY;
+              if(player2paddleY > 0){
+                player2paddleY = 0;
+              }
             }
-          }
-          else if(downPressedX){
-            paddleX -= 7;
-            if(paddleX < 0){
-              paddleX = 0;
+            else if (event.keyCode == '40') {
+              player2paddleY -= barY;
+              if(player2paddleY < 420){
+                player2paddleY = 420 - paddleHeight;
+              }
             }
-          }
-
-//-------------------------------------------------------------------
-          if(upPressedY){
-            paddleY += 7;
-            if(paddleY + paddleWidht > canvas.width){
-              paddleY = canvas.width - paddleWidht;
-            }
-          }
-          else if(downPressedY){
-            paddleY -= 7;
-            if(paddleY < 0){
-              paddleY = 0;
-            }
-          }
-//-------------------------------------------------------------------
+          });
+//------------------------------------------------------------------------------------
           x += dx;
           y += dy;
         }
-
-        // setInterval(boxDraw, 20);
-        setInterval(ballDraw, 20);
-
-
-
+        setInterval(moveAll, 20);
+      });
     </script>
-
+    <h1>핑퐁(탁구게임)</h1>
+    <hr>
+    <canvas id="canvas" width="600" height="420"></canvas>
+    <!-- <div id="player1_Bar"></div>
+     <div id="player2_Bar"></div>
+     <div id="ball"></div> -->
   </body>
 </html>
