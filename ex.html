@@ -19,19 +19,28 @@
         //--------------------------------------------------------------------
         var dx = 2;
         var dy = -2;
-        var barY = 4;
+        var barY1 = 4;
+        var barY2 = 4;
         //--------------------------------------------------------------------
         var ballRadius = 10;
 
         var paddleHeight = 75;
         var paddleWidht = 10;
+        var player1paddleX = (canvas.width - paddleWidht*57);
+        var player1paddleY = ((canvas.height - paddleHeight)/2);
         var player2paddleX = (canvas.width - paddleWidht*4);
         var player2paddleY = ((canvas.height - paddleHeight)/2);
-
         // document.addEventListener("keydown", keyDownHandler, false);
         // document.addEventListener("keyup", keyUpHandler, false);
 
-        function drawPaddle(){
+        function drawPaddlePlayer1(){
+          ctx.beginPath();
+          ctx.rect(player1paddleX, player1paddleY, paddleWidht, paddleHeight);
+          ctx.fillStyle = "#00FFFF";
+          ctx.fill();
+          ctx.closePath();
+        }
+        function drawPaddlePlayer2(){
           ctx.beginPath();
           ctx.rect(player2paddleX, player2paddleY, paddleWidht, paddleHeight);
           ctx.fillStyle = "#FFFF00";
@@ -49,7 +58,8 @@
         function moveAll(){
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           drawBall();
-          drawPaddle();
+          drawPaddlePlayer1();
+          drawPaddlePlayer2();
           if(x + dx > canvas.width-ballRadius || x + dx < ballRadius){
             dx = -dx;
           }
@@ -58,15 +68,30 @@
             dy = -dy;
           }
 //------------------------------------------------------------------------------------
-          $(document).keydown(function(event) {
+          $(drawPaddlePlayer1).keydown(function(event) {
+            if (event.keyCode == '81') {
+              player1paddleY += barY1;
+              if(player1paddleY > 0){
+                player1paddleY = 0;
+              }
+            }
+            else if (event.keyCode == '65') {
+              player1paddleY -= barY1;
+              if(player1paddleY < 420){
+                player1paddleY = 420 - paddleHeight;
+              }
+            }
+          });
+//------------------------------------------------------------------------------------
+          $(drawPaddlePlayer2).keydown(function(event) {
             if (event.keyCode == '38') {
-              player2paddleY += barY;
               if(player2paddleY > 0){
                 player2paddleY = 0;
               }
+              player2paddleY += barY2;
             }
             else if (event.keyCode == '40') {
-              player2paddleY -= barY;
+              player2paddleY -= barY2;
               if(player2paddleY < 420){
                 player2paddleY = 420 - paddleHeight;
               }
