@@ -16,6 +16,7 @@
         var ctx = canvas.getContext("2d");
         var x = canvas.width/2;//캔퍼스 폭 중앙
         var y = canvas.height -130;//캔퍼스 바닥에서 130떨어진 곳
+
         //--------------------------------------------------------------------
         var dx = 2;
         var dy = -2;
@@ -24,6 +25,10 @@
         //--------------------------------------------------------------------
         var ballRadius = 10;
 
+
+        var player1 = new drawPaddlePlayer1();
+        var player2 = new drawPaddlePlayer2();
+        var ball = new drawBall();
         var paddleHeight = 75;
         var paddleWidht = 10;
         var player1paddleX = (canvas.width - paddleWidht*57);
@@ -32,6 +37,9 @@
         var player2paddleY = ((canvas.height - paddleHeight)/2);
         // document.addEventListener("keydown", keyDownHandler, false);
         // document.addEventListener("keyup", keyUpHandler, false);
+//------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
         $(document).keydown(function(e) {
           if (e.keyCode == '81' && player1paddleY > 0) {
@@ -82,12 +90,28 @@
         });
 //------------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------------
         function drawPaddlePlayer1(){
           ctx.beginPath();
           ctx.rect(player1paddleX, player1paddleY, paddleWidht, paddleHeight);
           ctx.fillStyle = "#00FFFF";
           ctx.fill();
           ctx.closePath();
+          this.crashWith = function(otherobj) {
+          var myleft = player2paddleX;
+          var myright = player2paddleX + paddleWidht;
+          var mytop = player2paddleY;
+          var mybottom = player2paddleY + paddleHeight;
+          var otherleft = x;
+          var otherright = x;
+          var othertop = y;
+          var otherbottom = y;
+          var crash = true;
+          if ((mybottom < othertop)||(mytop > otherbottom)||(myright < otherleft)||(myleft > otherright)) {
+            crash = false;
+            }
+          return crash;
+          }
         }
         function drawPaddlePlayer2(){
           ctx.beginPath();
@@ -95,6 +119,21 @@
           ctx.fillStyle = "#FFFF00";
           ctx.fill();
           ctx.closePath();
+          this.crashWith = function(otherobj) {
+          var myleft = player1paddleX;
+          var myright = player1paddleX + paddleWidht;
+          var mytop = player1paddleY;
+          var mybottom = player1paddleY + paddleHeight;
+          var otherleft = x;
+          var otherright = x;
+          var othertop = y;
+          var otherbottom = y;
+          var crash = true;
+          if ((mybottom < othertop)||(mytop > otherbottom)||(myright < otherleft)||(myleft > otherright)) {
+            crash = false;
+            }
+          return crash;
+          }
         }
         function drawBall(){
           ctx.beginPath();
@@ -106,25 +145,56 @@
 
         function moveAll(){
           ctx.clearRect(0, 0, canvas.width, canvas.height);
+          var p1Score = 0;
+          var p2Score = 0;
+          ctx.font = "200px Georgia";
+          ctx.fillStyle = "#ffaacc"
+          ctx.fillText(p1Score, canvas.width/6, canvas.height/2+40);
+          ctx.font = "200px Georgia";
+          ctx.fillStyle = "#ffccaa"
+          ctx.fillText(p2Score, canvas.width-215, canvas.height/2+40);
           drawBall();
           drawPaddlePlayer1();
           drawPaddlePlayer2();
-          if(x + dx > canvas.width-ballRadius || x + dx < ballRadius){
-            dx = -dx;
-          }
+
 
           if(y + dy > canvas.height-ballRadius || y + dy < ballRadius ){ // 위 아래벽 튕겨내기
             dy = -dy;
           }
+          if(x + dx > canvas.width-ballRadius){
+            dx = dx;
+            p1Score += 1;
+          }
+          if( x + dx < ballRadius){
+            dx = dx;
+            p2Score += 1;
+          }
+//------------------------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------------------------
           x += dx;
           y += dy;
+
+          // fillText(){
+          //   ctx.strokeRect("player1", "30px", );
+          // }
+          if(player1.crashWith(ball)){
+            dx = -(dx+1);
+          }
+          if(player2.crashWith(ball)){
+            dx = -(dx-1);
+          }
         }
         setInterval(moveAll, 20);
       });
     </script>
     <h1>핑퐁(탁구게임)</h1>
     <hr>
-    <canvas id="canvas" width="600" height="420"></canvas>
+    <canvas id="canvas" width="600" height="420">
+      <div id = "p1"></div>
+      <div id = "p2"></div>
+    </canvas>
     <!-- <div id="player1_Bar"></div>
      <div id="player2_Bar"></div>
      <div id="ball"></div> -->
